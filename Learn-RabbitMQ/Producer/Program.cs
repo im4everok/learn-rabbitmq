@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
+using Producer;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +9,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSingleton<ProducerService>();
 
 var app = builder.Build();
 
@@ -21,5 +26,10 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapPost("produce-message", async ([FromBody] dynamic message, ProducerService producerService) =>
+{
+    producerService.Produce(message);
+});
 
 app.Run();
