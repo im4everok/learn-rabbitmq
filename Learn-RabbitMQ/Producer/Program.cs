@@ -27,7 +27,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapPost("produce-message", async ([FromBody] dynamic message, ProducerService producerService) =>
+app.MapPost("produce-message", async ([FromBody] string message, ProducerService producerService) =>
 {
     producerService.Produce(message);
 });

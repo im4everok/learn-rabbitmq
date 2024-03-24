@@ -6,7 +6,7 @@ namespace Producer
 {
     public class ProducerService
     {
-        public void Produce(object message)
+        public void Produce(string message)
         {
             var factory = new ConnectionFactory()
             {
