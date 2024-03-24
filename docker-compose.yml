@@ -1,0 +1,32 @@
+version: "3.4"
+
+services:
+  consumer_api:
+    image: consumer
+    build: 
+      context: Learn-RabbitMQ
+      dockerfile: Consumer/Dockerfile
+    ports:
+      - 5043:5043
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5043
+
+  producer_api:
+    image: producer
+    build: 
+      context: Learn-RabbitMQ
+      dockerfile: Producer/Dockerfile
+    ports:
+      - 5006:5006
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5006
+
+  rabbitmq:
+    image: rabbitmq:3.9.5-management
+    hostname: "rabbitmq"
+    container_name: rabbitmq_learncontainer
+    ports:
+      - 5672:5672
+      - 15672:15672
