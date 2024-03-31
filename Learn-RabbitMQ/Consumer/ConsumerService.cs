@@ -6,7 +6,7 @@ namespace Consumer
 {
     public class ConsumerService
     {
-        public string Consume()
+        public void Consume()
         {
             var factory = new ConnectionFactory() { HostName = "rabbitmq",
             UserName = "guest", Password = "guest", Port = 5672 };
@@ -24,13 +24,14 @@ namespace Consumer
 
             var consumer = new EventingBasicConsumer(channel);
 
-            string result = "";
+            //string result = "";
 
             consumer.Received += (model, eventArgs) =>
             {
                 var body = eventArgs.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-                result = message;
+                //result = message;
+                Console.WriteLine($"Consumed: {message}");
             };
 
             channel.BasicConsume(
@@ -38,8 +39,6 @@ namespace Consumer
                 autoAck: true,
                 consumer: consumer
                 );
-
-            return result;
         }
     }
 }

@@ -1,4 +1,7 @@
 using Consumer;
+using RabbitMQ.Client.Events;
+using RabbitMQ.Client;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +29,48 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapPost("consume-message", async (ConsumerService consumerService) =>
+var factory = new ConnectionFactory()
 {
-    var result = consumerService.Consume();
+    HostName = "rabbitmq",
+    UserName = "guest",
+    Password = "guest",
+    Port = 5672
+};
 
-    return result;
-});
+using var connection = factory.CreateConnection();
+
+using var channel = connection.CreateModel();
+
+channel.QueueDeclare(
+    queue: "sample",
+    durable: false,
+    exclusive: false,
+    autoDelete: false,
+    arguments: null);
+
+var consumer = new EventingBasicConsumer(channel);
+
+//string result = "";
+
+consumer.Received += (model, eventArgs) =>
+{
+    var body = eventArgs.Body.ToArray();
+    var message = Encoding.UTF8.GetString(body);
+    //result = message;
+    Console.WriteLine($"Consumed: {message}");
+};
+
+channel.BasicConsume(
+    queue: "sample",
+    autoAck: true,
+    consumer: consumer
+    );
+
+//app.MapPost("consume-message", async (ConsumerService consumerService) =>
+//{
+//    var result = consumerService.Consume();
+
+//    return result;
+//});
 
 app.Run();
